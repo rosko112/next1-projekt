@@ -9,7 +9,8 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
-import { updateInvoice } from '@/app/lib/actions';
+import { updateInvoice, State } from '@/app/lib/actions';
+import { useActionState } from 'react';
 
 export default function EditInvoiceForm({
   invoice,
@@ -18,13 +19,17 @@ export default function EditInvoiceForm({
   invoice: InvoiceForm;
   customers: CustomerField[];
 }) {
-  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
- 
+  const initialState: State = { message: null, errors: {} };
+  const [state, formAction] = useActionState(updateInvoice, initialState);
+
   return (
-    <form action={updateInvoiceWithId}>{/* ... */}
-      <div className="rounded-md bg-gray-50 p-4 md:p-6">
+    <form action={formAction} className="space-y-6">
+      {/* Hidden input for invoice ID */}
+      <input type="hidden" name="id" value={invoice.id} />
+
+      <div className="rounded-md bg-gray-50 p-4 md:p-6 space-y-4">
         {/* Customer Name */}
-        <div className="mb-4">
+        <div>
           <label htmlFor="customer" className="mb-2 block text-sm font-medium">
             Choose customer
           </label>
@@ -46,27 +51,31 @@ export default function EditInvoiceForm({
             </select>
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
+          {state.errors?.customerId && (
+            <p className="mt-1 text-xs text-red-500">{state.errors.customerId.join(', ')}</p>
+          )}
         </div>
 
         {/* Invoice Amount */}
-        <div className="mb-4">
+        <div>
           <label htmlFor="amount" className="mb-2 block text-sm font-medium">
             Choose an amount
           </label>
-          <div className="relative mt-2 rounded-md">
-            <div className="relative">
-              <input
-                id="amount"
-                name="amount"
-                type="number"
-                step="0.01"
-                defaultValue={invoice.amount}
-                placeholder="Enter USD amount"
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              />
-              <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
+          <div className="relative">
+            <input
+              id="amount"
+              name="amount"
+              type="number"
+              step="0.01"
+              defaultValue={invoice.amount}
+              placeholder="Enter USD amount"
+              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+            />
+            <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
           </div>
+          {state.errors?.amount && (
+            <p className="mt-1 text-xs text-red-500">{state.errors.amount.join(', ')}</p>
+          )}
         </div>
 
         {/* Invoice Status */}
@@ -110,8 +119,13 @@ export default function EditInvoiceForm({
               </div>
             </div>
           </div>
+          {state.errors?.status && (
+            <p className="mt-1 text-xs text-red-500">{state.errors.status.join(', ')}</p>
+          )}
         </fieldset>
       </div>
+
+      {/* Form buttons */}
       <div className="mt-6 flex justify-end gap-4">
         <Link
           href="/dashboard/invoices"
@@ -121,6 +135,9 @@ export default function EditInvoiceForm({
         </Link>
         <Button type="submit">Edit Invoice</Button>
       </div>
+
+      {/* Display form-level message */}
+      {state.message && <p className="mt-2 text-sm text-red-500">{state.message}</p>}
     </form>
   );
 }
