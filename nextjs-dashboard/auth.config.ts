@@ -1,9 +1,12 @@
 import type { NextAuthConfig } from 'next-auth';
 
 export const authConfig = {
+  // Custom pages
   pages: {
     signIn: '/login',
   },
+
+  // Callbacks for route protection / redirects
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
@@ -11,7 +14,7 @@ export const authConfig = {
 
       if (isOnDashboard) {
         if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
+        return false; // Redirect unauthenticated users to login
       } else if (isLoggedIn) {
         return Response.redirect(new URL('/dashboard', nextUrl));
       }
@@ -19,6 +22,10 @@ export const authConfig = {
       return true;
     },
   },
-  providers: [], // Add providers later
-  secret: process.env.AUTH_SECRET, // ✅ this line fixes "MissingSecret"
+
+  // Providers (fill in real ones later)
+  providers: [],
+
+  // ⚠️ This is required for production / serverless environments
+  secret: process.env.AUTH_SECRET,
 } satisfies NextAuthConfig;
