@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import bcrypt from 'bcrypt';
 import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
@@ -96,9 +95,10 @@ export async function GET() {
 
     return Response.json({ message: 'Database seeded successfully' });
     
-  } catch (error: any) {
-    return Response.json({ error: error.message }, { status: 500 });
-  }
+  } catch (error: unknown) {
+  const message = error instanceof Error ? error.message : 'Unknown error';
+  return Response.json({ error: message }, { status: 500 });
+}
 }
 
 
