@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
-import postgres from 'postgres';
+import postgres, { Sql } from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
-import internal from 'stream';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -95,10 +94,9 @@ export async function GET() {
 
     return Response.json({ message: 'Database seeded successfully' });
   } catch (error: unknown) {
-    const errorMessage = typeof error === 'object' && error !== null && 'message' in error
-      ? (error as { message: string }).message
-      : 'An unknown error occurred';
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred';
+
     return Response.json({ error: errorMessage }, { status: 500 });
   }
 }
-
