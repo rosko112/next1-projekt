@@ -97,3 +97,8 @@ export async function GET() {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
+
+// Example of the changed function
+function exampleFunction(param: unknown) {
+  // function implementation
+}
