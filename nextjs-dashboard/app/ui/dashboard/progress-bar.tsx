@@ -1,5 +1,4 @@
 import { Revenue } from '@/app/lib/definitions';
-import { fetchRevenue } from '@/app/lib/data';
 
 type ProgressBarProps = {
   collected: number;

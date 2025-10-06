@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
+import internal from 'stream';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -93,12 +94,11 @@ export async function GET() {
     });
 
     return Response.json({ message: 'Database seeded successfully' });
-  } catch (error: any) {
-    return Response.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const errorMessage = typeof error === 'object' && error !== null && 'message' in error
+      ? (error as { message: string }).message
+      : 'An unknown error occurred';
+    return Response.json({ error: errorMessage }, { status: 500 });
   }
 }
 
-// Example of the changed function
-function exampleFunction(param: unknown) {
-  // function implementation
-}
