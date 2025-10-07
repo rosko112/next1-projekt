@@ -34,6 +34,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
   });
 
   if (!validated.success) {
+    // ✅ Return early without redirecting
     return { errors: validated.error.flatten().fieldErrors, message: 'Failed to create invoice.' };
   }
 
@@ -49,7 +50,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
   } catch {
     return { message: 'Database Error: Failed to create invoice.' };
   }
-
+  
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
